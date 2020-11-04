@@ -87,9 +87,16 @@ public class ANN {
             this.weights[layerIndex]  = temp;
         }
 
-
     }
 
+
+    /**
+     * The exposed train function that handels each iteration of training
+     * @param testCases a 2d array containing arrays with input values
+     * @param testSolutions a 2d array containing arrays with solutions mapping to the input values
+     * @param iterations the desired iterations for which the training should be performed
+     * @param margin the margin value that the mean squared error of the network needs to beat NOTE: not used yet
+     */
     public void train(float[][] testCases, float[][] testSolutions, int iterations, float margin){
 
         float errorSum = 0;
@@ -115,10 +122,14 @@ public class ANN {
             System.out.println("error@lastIteration:: "+errorSum);
         }
 
-
-
     }
 
+    /**
+     * The training function that updates the weight matrix depending on the input,the supplied solution for the input and the set learning rate
+     * @param input The input for which the network weights should be adjusted
+     * @param solution The solution to the input set from which the error or difference will be calculated
+     * @return the mean squared error of the networks result compared to the supplied solution
+     */
     private float train(float[] input, float[] solution){
 
         float[] results = predict(input);
@@ -185,11 +196,12 @@ public class ANN {
 
 
 
-        // weights from this layer -= neuron from current layer
-        //                              * derivSigmoid(next layer)
-        //                              * -sum((weights from this neuron to next layer) * (cost from next layer))
-        //                              * LEARNING_RATE
-
+        /*
+            weights from this layer -= neuron from current layer
+                                     * derivSigmoid(next layer)
+                                     * -sum((weights from this neuron to next layer) * (cost from next layer))
+                                     * LEARNING_RATE
+        */
 
 
 
@@ -242,6 +254,7 @@ public class ANN {
 
     }
 
+
     /**
      * Applies the activation function to each neurons value
      * @param input The array of neurons that need to be activated
@@ -255,7 +268,11 @@ public class ANN {
     }
 
 
-
+    /**
+     * calculates the deriviative of the sigmoid function and applies the operation to the input values
+     * @param arg1 the array containing the values on which the deriviative sigmoid function should be applied
+     * @return an array containing the results of the operation
+     */
     private static float[] derivSigmoid(float[] arg1){
         for(int i = 0; i < arg1.length; i++){
             arg1[i]= arg1[i]*(1-arg1[i]);
@@ -263,6 +280,13 @@ public class ANN {
         return arg1;
     }
 
+
+    /**
+     * pairwise subtraction of the values in two equal lengths arrays
+     * @param arg1 the first array containing the first element of each subtraction
+     * @param arg2 the second array containing the second element of each subtraction
+     * @return an array containing the calculated differences
+     */
     private static float[] subtract(float[] arg1, float[] arg2){
 
         if(arg1.length != arg2.length){
@@ -276,6 +300,12 @@ public class ANN {
         return temp;
     }
 
+
+    /**
+     * calculates the total sum of all the entires of an array.
+     * @param input the array containing the elements to be summed up
+     * @return the sum of the element as a floating point value
+     */
     private static float sum(float[] input){
         float result = 0;
         for(int i = 0; i < input.length;i++){
@@ -284,6 +314,15 @@ public class ANN {
         return result;
     }
 
+
+    /**
+     * calculates the the mean squared value of each array input
+     * NOTE: this is a helper function that relies on the input already being the difference of two values.
+     * usually the mean squared function is defined as follows:
+     *          meanSquared(x,y) = (1/2)*(|x-y|^2)
+     * @param input an array containing differences between two values
+     * @return the mean squared value of the difference
+     */
     private static float[] meanSquared(float[] input){
         for (int i = 0; i < input.length; i++) {
             input[i] = (float)(Math.pow(input[i],2)*0.5f);
