@@ -19,6 +19,11 @@ public class MnistFileReader {
         loadImgInfo(imgPath);
     }
 
+    /**
+     * load the binary label file into a byte array nad
+     * load the amount of labels variable contained in the header of the file.
+     * @param path
+     */
     private void loadLabelInfo(String path){
 
         File file = new File(path);
@@ -37,6 +42,11 @@ public class MnistFileReader {
 
     }
 
+    /**
+     * load the binary image file into a byte array and
+     * set the amount of images and image dimensions variables contained in the header of the file.
+     * @param path
+     */
     private void loadImgInfo(String path){
 
         File file = new File(path);
@@ -58,6 +68,12 @@ public class MnistFileReader {
         }
     }
 
+
+    /**
+     * get the image data for a single image from the mnist database
+     * @param index the index of the image to be retrieved
+     * @return an array contained the pixels of the image (0-255) on a row by row basis.
+     */
     public int[] getImage(int index){
         if(index < 0 && index > imgAmount){
             System.err.println("Cant retrieve img #"+index+", only "+imgAmount+" images loaded!");
@@ -71,6 +87,11 @@ public class MnistFileReader {
         return temp;
     }
 
+    /**
+     * get the image data for a single image from the mnist database
+     * @param index the index of the image set to be retrieved
+     * @return An object containing the array of the pixels of the image (0-255) on a row by row basis and the array containing the binary representation of the label
+     */
     public TrainingSet getTrainingSet(int index){
 
         if(index < 0 && index > imgAmount){
@@ -94,6 +115,10 @@ public class MnistFileReader {
 
     }
 
+    /**
+     * print the image data from a mnist image to the console
+     * @param data the array containing the image data
+     */
     public void printImgToConsole(float[] data){
         System.out.println("\n");
         for (int row = 0; row < this.imgRowDim; row++) {
@@ -110,6 +135,12 @@ public class MnistFileReader {
 
     }
 
+    /**
+     * pack the representation of the label into a binary format that coresponds to the output neuron of a neural network
+     * e.g: lable = 8 -> 0,0,0,0,0,0,0,0,1,0 the 9th neuron lights up indicating a digit 8 was processed.
+     * @param label the int representation of the label [0-9]
+     * @return the array containing the binary representation
+     */
     private float[] labelToBinary(int label){
 
         float[] temp = new float[10];
@@ -119,6 +150,12 @@ public class MnistFileReader {
         return temp;
 
     }
+
+    /**
+     * same as labelToBinary but in reverse
+     * @param binaryLabel the array containing the binary representation
+     * @return the integer representation of the label
+     */
     public int binaryToLabel(float[] binaryLabel){
         for (int i = 0; i < binaryLabel.length; i++) {
             if(binaryLabel[i] == 1){
@@ -128,6 +165,10 @@ public class MnistFileReader {
         return 0;
     }
 
+    /**
+     * An object class used to store the image data together with the label data.
+     * Used a return object.
+     */
     public class TrainingSet{
 
         public float[] imgData;
