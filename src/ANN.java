@@ -369,7 +369,7 @@ public class ANN {
                 {1,1}};
         float[][] trainSolutions = {{0},{1},{1},{0}};
 
-        ann.train(trainData,trainSolutions,50000,0.01f);
+        ann.train(trainData,trainSolutions,50000,0.01f,3);
 
         float[] inputs = new float[]{0,0};
         float[] result = ann.predict(inputs);
