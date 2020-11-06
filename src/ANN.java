@@ -1,3 +1,4 @@
+
 public class ANN {
 
     float[] input;
@@ -96,8 +97,9 @@ public class ANN {
      * @param testSolutions a 2d array containing arrays with solutions mapping to the input values
      * @param iterations the desired iterations for which the training should be performed
      * @param margin the margin value that the mean squared error of the network needs to beat NOTE: not used yet
+     * @param verbosityLevel the desired level of information printed to the console
      */
-    public void train(float[][] testCases, float[][] testSolutions, int iterations, float margin){
+    public void train(float[][] testCases, float[][] testSolutions, int iterations, float margin, int verbosityLevel){
 
         float errorSum = 0;
         int iterCount = 0;
@@ -110,16 +112,20 @@ public class ANN {
             iterCount++;
         }
 
-        System.out.println("Test cases distribution:");
-        for (int i = 0; i < testCasesCounter.length; i++) {
-            System.out.println("Test case #"+i+" : "+testCasesCounter[i]+" times seen during training!");
+        if(verbosityLevel>1){
+            System.out.println("Test cases distribution:");
+            for (int i = 0; i < testCasesCounter.length; i++) {
+                System.out.println("Test case #"+i+" : "+testCasesCounter[i]+" times seen during training!");
+            }
         }
 
-        System.out.println("Training finished after "+iterCount+" iterations.");
-        if(errorSum < margin){
-            System.out.println("Target error of "+margin+" was reached. error@lastIteration: "+errorSum);
-        }else{
-            System.out.println("error@lastIteration:: "+errorSum);
+        if(verbosityLevel>0){
+            System.out.println("Training finished after "+iterCount+" iterations.");
+            if(errorSum < margin){
+                System.out.println("Target error of "+margin+" was reached. error@lastIteration: "+errorSum);
+            }else{
+                System.out.println("error@lastIteration:: "+errorSum);
+            }
         }
 
     }
@@ -135,11 +141,12 @@ public class ANN {
         float[] results = predict(input);
         float[] costTotal = subtract(solution,results);
         float[] derivSigmoid = derivSigmoid(results.clone());
+        float[][][] weightsUpdated = weights.clone();
 
         // weights from last hidden to output layer
         for (int weightFrom = 0; weightFrom < weights[weights.length-1].length; weightFrom++) {
             for (int weightTo = 0; weightTo < weights[weights.length-1][weightFrom].length; weightTo++) {
-                weights[weights.length-1][weightFrom][weightTo] -= hidden[hidden.length-1][weightFrom] * derivSigmoid[weightTo] * (-costTotal[weightTo]) * learningRate;
+                weightsUpdated[weights.length-1][weightFrom][weightTo] -= hidden[hidden.length-1][weightFrom] * derivSigmoid[weightTo] * (-costTotal[weightTo]) * learningRate;
             }
         }
         //bias weights for output neurons
@@ -151,7 +158,7 @@ public class ANN {
 
         // all weights in between hidden layers
         float[] errorNextLayer = costTotal.clone();
-        for (int weightLayer = weights.length-2; weightLayer >= 0; weightLayer--) {
+        for (int weightLayer = weights.length-2; weightLayer > 0; weightLayer--) {
 
             //calculate the deriv of the next layer nodes
             derivSigmoid = derivSigmoid(hidden[weightLayer].clone());
@@ -160,15 +167,17 @@ public class ANN {
             float[] error = new float[weights[weightLayer+1].length];
             for (int i = 0; i < error.length; i++) {
                 for (int j = 0; j < weights[weightLayer+1][0].length; j++) {
-                    error[i] += weights[weightLayer+1][i][j]*errorNextLayer[j];
+                    error[i] += weights[weightLayer+1][i][j]*(errorNextLayer[j]);
                 }
             }
-            errorNextLayer = error;
+
+            //normalize the error to avoid gradient explosion
+            errorNextLayer = normalize(error);
 
             //calculate the weight from this layer to the next
             for (int weightFrom = 0; weightFrom < weights[weightLayer].length; weightFrom++) {
                 for (int weightTo = 0; weightTo < weights[weightLayer][weightFrom].length; weightTo++) {
-                    weights[weightLayer][weightFrom][weightTo] -= hidden[weightLayer][weightFrom] * derivSigmoid[weightTo] *(-errorNextLayer[weightTo]) * learningRate;
+                    weightsUpdated[weightLayer][weightFrom][weightTo] -= hidden[weightLayer-1][weightFrom] * derivSigmoid[weightTo] *(-errorNextLayer[weightTo]) * learningRate;
                 }
             }
 
@@ -185,12 +194,14 @@ public class ANN {
         float[] error = new float[weights[1].length];
         for (int i = 0; i < error.length; i++) {
             for (int j = 0; j < weights[1][0].length; j++) {
-                error[i] += weights[1][i][j]*errorNextLayer[j];
+                error[i] += weights[1][i][j]*(errorNextLayer[j]);
             }
         }
+        //normalize the error to avoid gradient explosion
+        error = normalize(error);
         for (int weightFrom = 0; weightFrom < weights[0].length; weightFrom++) {
             for (int weightTo = 0; weightTo < weights[0][weightFrom].length; weightTo++) {
-                weights[0][weightFrom][weightTo] -= input[weightFrom] * derivSigmoid[weightTo] * (-error[weightTo]) * learningRate;
+                weightsUpdated[0][weightFrom][weightTo] -= input[weightFrom] * derivSigmoid[weightTo] * (-error[weightTo]) * learningRate;
             }
         }
 
@@ -203,6 +214,8 @@ public class ANN {
                                      * LEARNING_RATE
         */
 
+        //update the all the weights after the iteration
+        this.weights = weightsUpdated;
 
 
         return sum(meanSquared(costTotal));
@@ -330,39 +343,23 @@ public class ANN {
         return input;
     }
 
-
-    public static void main(String[] args) {
-
-        ANN ann = new ANN(2,10,5,1);
-        float[][] trainData = {{0,0},
-                {1,0},
-                {0,1},
-                {1,1}};
-        float[][] trainSolutions = {{0},{1},{1},{0}};
-
-        ann.train(trainData,trainSolutions,50000,0.01f);
-
-        float[] inputs = new float[]{0,0};
-        float[] result = ann.predict(inputs);
-        for(Float res: result){
-            System.out.println("Result (0,0): "+Math.round(res)+" was "+res);
+    /**
+     * normalizes the array of float to values between [-1,1]
+     * @param input the array containing the values to normalize
+     * @return an array containing the normalized values
+     */
+    private static float[] normalize(float[] input){
+        float[] temp = new float[input.length];
+        float biggestValue = 0;
+        for(int index = 0; index < input.length; index++) {
+            biggestValue = biggestValue > Math.abs(input[index]) ? biggestValue : Math.abs(input[index]);
         }
-        inputs = new float[]{1,0};
-        result = ann.predict(inputs);
-        for(Float res: result){
-            System.out.println("Result (1,0): "+Math.round(res)+" was "+res);
+        for (int index = 0; index < input.length; index++) {
+            temp[index] = input[index]/biggestValue;
         }
-        inputs = new float[]{0,1};
-        result = ann.predict(inputs);
-        for(Float res: result){
-            System.out.println("Result (0,1): "+Math.round(res)+" was "+res);
-        }
-        inputs = new float[]{1,1};
-        result = ann.predict(inputs);
-        for(Float res: result){
-            System.out.println("Result (1,1): "+Math.round(res)+" was "+res);
-        }
-
+        return temp;
     }
+
+
 
 }
