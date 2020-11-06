@@ -360,6 +360,40 @@ public class ANN {
         return temp;
     }
 
+    public static void main(String[] args) {
+
+        ANN ann = new ANN(2,10,5,1);
+        float[][] trainData = {{0,0},
+                {1,0},
+                {0,1},
+                {1,1}};
+        float[][] trainSolutions = {{0},{1},{1},{0}};
+
+        ann.train(trainData,trainSolutions,50000,0.01f);
+
+        float[] inputs = new float[]{0,0};
+        float[] result = ann.predict(inputs);
+        for(Float res: result){
+            System.out.println("Result (0,0): "+Math.round(res)+" was "+res);
+        }
+        inputs = new float[]{1,0};
+        result = ann.predict(inputs);
+        for(Float res: result){
+            System.out.println("Result (1,0): "+Math.round(res)+" was "+res);
+        }
+        inputs = new float[]{0,1};
+        result = ann.predict(inputs);
+        for(Float res: result){
+            System.out.println("Result (0,1): "+Math.round(res)+" was "+res);
+        }
+        inputs = new float[]{1,1};
+        result = ann.predict(inputs);
+        for(Float res: result){
+            System.out.println("Result (1,1): "+Math.round(res)+" was "+res);
+        }
+
+    }
+
 
 
 }
