@@ -57,8 +57,6 @@ public class MnistDigit {
             MnistFileReader.TrainingSet test = mnistObject.getTrainingSet(testcase);
             float[] result = network.predict(test.imgData);
             System.out.println("Test Case "+testcase+":");
-            //System.out.println("Is: "+mnistObject.binaryToLabel(test.imgLabel));
-            //mnistObject.printImgToConsole(test.imgData);
             System.out.println("Is ["+mnistObject.binaryToLabel(test.imgLabel)+"] Predicted ["+getMax(result)+"]");
             if(mnistObject.binaryToLabel(test.imgLabel) == getMax(result)){
                 correct++;
