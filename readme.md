@@ -1,4 +1,4 @@
-#Artifical Neural Network
+# Artifical Neural Network
 
 This repository contains a no dependency java implementation of an artifical neural net. The forward-pass and backpropagation are implemented using 2d and 3d arrays instead of the popular alternative of a matrix implementation.
 This choice was made to give the user an alternative in trying to understand backpropagation without the essentials being hidden behind a matrix implementation. 
