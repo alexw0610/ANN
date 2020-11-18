@@ -1,11 +1,17 @@
-
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.util.FPSAnimator;
+import org.joml.Vector2f;
+
 import java.awt.*;
-import java.nio.FloatBuffer;
 import java.util.LinkedList;
 
 public class Display implements GLEventListener {
+
+    private static final float NODEOFFSET = 50.0f;
+    private static final float LAYEROFFSET = 150.0f;
+    private static final float SCALE = 30.0f;
+
 
     private int width;
     private int height;
@@ -14,9 +20,11 @@ public class Display implements GLEventListener {
     GLCanvas canvas;
     GLProfile profile;
     GLCapabilities caps;
+    FPSAnimator animator;
 
 
     private LinkedList<DisplayNode> nodes = new LinkedList<>();
+    private LinkedList<DisplayWeight> weights = new LinkedList<>();
 
     public Display(int width, int height){
 
@@ -37,32 +45,36 @@ public class Display implements GLEventListener {
         frame.add(canvas);
         frame.setSize(this.width,this.height);
         frame.setVisible(true);
-        frame.setSize(this.width,this.height);
-        canvas.setSize(this.width,this.height);
+        animator = new FPSAnimator(canvas, 30, true);
+        animator.start();
+
 
     }
 
     public void displayNet(ANN net){
-        this.nodes.clear();
 
-        for (int node = 0; node < net.input.length; node++) {
-            this.nodes.add(new DisplayNode(0,node,net.input[node]));
-        }
+        synchronized (this.nodes){
 
-        for (int hiddenLayer = 0; hiddenLayer < net.hidden.length; hiddenLayer++) {
-            for (int node = 0; node < net.hidden[hiddenLayer].length; node++) {
-                this.nodes.add(new DisplayNode(hiddenLayer+1,node,net.hidden[hiddenLayer][node]));
+            this.nodes.clear();
+
+            for (int node = 0; node < net.input.length; node++) {
+                this.nodes.add(new DisplayNode(new Vector2f(0,node*NODEOFFSET),net.input[node]));
             }
+
+            for (int hiddenLayer = 0; hiddenLayer < net.hidden.length; hiddenLayer++) {
+                for (int node = 0; node < net.hidden[hiddenLayer].length; node++) {
+                    this.nodes.add(new DisplayNode(new Vector2f((hiddenLayer+1)*LAYEROFFSET,node*NODEOFFSET),net.hidden[hiddenLayer][node]));
+                }
+            }
+
+            for (int node = 0; node < net.output.length; node++) {
+                this.nodes.add(new DisplayNode(new Vector2f((net.hidden.length+1)*LAYEROFFSET,node*NODEOFFSET),net.output[node]));
+            }
+
         }
 
-        for (int node = 0; node < net.output.length; node++) {
-            this.nodes.add(new DisplayNode(net.hidden.length+1,node,net.output[node]));
-        }
-        canvas.display();
 
     }
-
-
 
 
     @Override
@@ -80,26 +92,30 @@ public class Display implements GLEventListener {
 
         GL2 gl = glAutoDrawable.getGL().getGL2();
 
-        for (DisplayNode node: this.nodes) {
-            node.scaleVertexPoints();
-            node.translateVertexPoints();
-            node.toScreenCoordinates(this.width,this.height);
+        synchronized (this.nodes) {
+            gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+            gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+            gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+
+            for (DisplayNode node : this.nodes) {
+
+                float[] vertexPoints = node.getVertexPoints();
+
+                Transform.scale(vertexPoints, (node.value + 1) * SCALE);
+                Transform.translate(vertexPoints, node.position);
+                Transform.translate(vertexPoints, new Vector2f(this.width, this.height));
+                Transform.toClipSpace(vertexPoints, this.width, this.height);
 
 
-            System.out.println(node.vertexPoints[0]);
+                gl.glBegin(GL2.GL_POLYGON);
+                gl.glColor3f(node.color.x, node.color.y, node.color.z);
+                for (int i = 0; i < vertexPoints.length / 3; i++) {
+                    gl.glVertex3f(vertexPoints[i * 3], vertexPoints[i * 3 + 1], vertexPoints[i * 3 + 2]);
+                }
+                gl.glEnd();
 
-            gl.glBegin(GL2.GL_POLYGON);
-            for (int i = 0; i < node.vertexPoints.length/3; i++) {
-                gl.glVertex3f(node.vertexPoints[i*3],node.vertexPoints[i*3+1],node.vertexPoints[i*3+2]);
             }
-
-
-            gl.glEnd();
-
         }
-        this.nodes.clear();
-
-
     }
 
     @Override
@@ -107,7 +123,4 @@ public class Display implements GLEventListener {
 
     }
 
-    public static void main(String[] args) {
-        Display display = new Display(1024,768);
-    }
 }

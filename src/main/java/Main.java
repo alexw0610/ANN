@@ -7,17 +7,31 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        ANN ann = new ANN(2,10,5,1);
+        ANN ann = new ANN(2,10,10,1);
         float[][] trainData = {{0,0},
                 {1,0},
                 {0,1},
                 {1,1}};
         float[][] trainSolutions = {{0},{1},{1},{0}};
 
-        ann.train(trainData,trainSolutions,50000,0.01f,3);
-
         Display display = new Display(1024,768);
+
+        display.canvas.reshape(0,0,1024,768);
+        display.frame.repaint();
         display.displayNet(ann);
+
+        for(int cycle = 0; cycle <100000;cycle++){
+            ann.train(trainData,trainSolutions,1,0.01f,1);
+            display.displayNet(ann);
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
 
         /*
         Persist the weights of a trained model to disk inorder to load and reuse them later.
