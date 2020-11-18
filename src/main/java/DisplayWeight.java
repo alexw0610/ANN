@@ -19,7 +19,7 @@ public class DisplayWeight {
 
     private void setColor() {
 
-        if (this.value < 0.5f) {
+        if (this.value < 0f) {
             this.color = new Vector3f(255.0f, 0.0f, 0.0f);
         } else {
             this.color = new Vector3f(0.0f, 255.0f, 0.0f);

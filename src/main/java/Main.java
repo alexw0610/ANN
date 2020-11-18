@@ -7,7 +7,7 @@ public class Main {
      */
     public static void main(String[] args) {
 
-        ANN ann = new ANN(2,10,10,1);
+        ANN ann = new ANN(2,8,5,1);
         float[][] trainData = {{0,0},
                 {1,0},
                 {0,1},
