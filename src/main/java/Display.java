@@ -8,9 +8,9 @@ import java.util.LinkedList;
 
 public class Display implements GLEventListener {
 
-    private static final float NODEOFFSET = 50.0f;
-    private static final float LAYEROFFSET = 150.0f;
-    private static final float SCALE = 30.0f;
+    private static final float NODEOFFSET = 65.0f;
+    private static final float LAYEROFFSET = 225.0f;
+    private static final float SCALE = 25.0f;
 
 
     private int width;
@@ -105,7 +105,6 @@ public class Display implements GLEventListener {
 
         GL2 gl = glAutoDrawable.getGL().getGL2();
 
-
         synchronized(this.weights){
 
             gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -118,6 +117,10 @@ public class Display implements GLEventListener {
 
                 Transform.translate(vertexPointStart, new Vector2f(this.width, this.height));
                 Transform.translate(vertexPointEnd, new Vector2f(this.width, this.height));
+
+                Transform.translate(vertexPointStart, new Vector2f(-2.0f*LAYEROFFSET, -4*NODEOFFSET));
+                Transform.translate(vertexPointEnd, new Vector2f(-2.0f*LAYEROFFSET, -4*NODEOFFSET));
+
                 Transform.toClipSpace(vertexPointStart, this.width, this.height);
                 Transform.toClipSpace(vertexPointEnd, this.width, this.height);
 
@@ -138,6 +141,9 @@ public class Display implements GLEventListener {
                 Transform.scale(vertexPoints, (node.value + 1) * SCALE);
                 Transform.translate(vertexPoints, node.position);
                 Transform.translate(vertexPoints, new Vector2f(this.width, this.height));
+                Transform.translate(vertexPoints, new Vector2f(-2.0f*LAYEROFFSET, -4*NODEOFFSET));
+
+
                 Transform.toClipSpace(vertexPoints, this.width, this.height);
 
                 gl.glBegin(GL2.GL_POLYGON);

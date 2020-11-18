@@ -24,7 +24,7 @@ public class Main {
             ann.train(trainData,trainSolutions,1,0.01f,1);
             display.displayNet(ann);
             try {
-                Thread.sleep(250);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
