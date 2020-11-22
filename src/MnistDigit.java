@@ -1,4 +1,3 @@
-
 public class MnistDigit {
 
     public static void main(String[] args) {
