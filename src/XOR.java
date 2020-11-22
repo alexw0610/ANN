@@ -6,11 +6,15 @@ class XOR{
      */
     public static void main(String[] args) {
 
-        ANN ann = new ANN(2,10,5,1);
-        float[][] trainData = {{0,0},
+        ANN ann = new ANN(2,10,5,1).learningRate(0.02f);
+
+        float[][] trainData = {
+                {0,0},
                 {1,0},
                 {0,1},
-                {1,1}};
+                {1,1}
+        };
+
         float[][] trainSolutions = {{0},{1},{1},{0}};
 
         ann.train(trainData,trainSolutions,50000,0.01f,3);

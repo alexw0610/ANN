@@ -3,14 +3,14 @@ import java.nio.ByteBuffer;
 
 public class ANN {
 
-    float[] input;
-    float[][] hidden;
-    float[] output;
+    private float[] input;
+    private final float[][] hidden;
+    private float[] output;
 
-    float[][][] weights;
-    float[][] bias;
+    private float[][][] weights;
+    private final float[][] bias;
 
-    float learningRate = 0.02f;
+    private float learningRate = 0.02f;
 
 
     public ANN(int input, int hidden, int layer, int output){
@@ -92,9 +92,24 @@ public class ANN {
 
     }
 
+    /**
+     * Set the desired learning rate of the neural network.
+     * @param rate a non negative float value representing the desired learning rate
+     * @return the instance of ANN with an updated learning rate
+     */
+    public ANN learningRate(float rate) {
+        if(rate >= 0.0f){
+            this.learningRate = rate;
+            return this;
+        }else{
+            System.err.println("Error: learning rate cant be negative. Default was used.");
+            return this;
+        }
+    }
+
 
     /**
-     * The exposed train function that handels each iteration of training
+     * The exposed train function that handles each iteration of training
      * @param testCases a 2d array containing arrays with input values
      * @param testSolutions a 2d array containing arrays with solutions mapping to the input values
      * @param iterations the desired iterations for which the training should be performed
@@ -285,7 +300,7 @@ public class ANN {
 
 
     /**
-     * calculates the deriviative of the sigmoid function and applies the operation to the input values
+     * calculates the derivative of the sigmoid function and applies the operation to the input values
      * @param arg1 the array containing the values on which the deriviative sigmoid function should be applied
      * @return an array containing the results of the operation
      */
