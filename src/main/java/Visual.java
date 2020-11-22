@@ -1,5 +1,5 @@
 
-public class Main {
+public class Visual{
     /**
      * A quick demo of the neural net implementation using two input neurons and one output neuron.
      * The example that the net learns is the XOR truth table.
@@ -15,7 +15,6 @@ public class Main {
         float[][] trainSolutions = {{0},{1},{1},{0}};
 
         Display display = new Display(1024,768);
-
         display.canvas.reshape(0,0,1024,768);
         display.frame.repaint();
         display.displayNet(ann);

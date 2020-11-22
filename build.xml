@@ -13,7 +13,7 @@
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/ANN.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="ANN"/>
+                <attribute name="Main-Class" value="XOR"/>
             </manifest>
         </jar>
     </target>
