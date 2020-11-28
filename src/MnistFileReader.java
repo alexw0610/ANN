@@ -119,7 +119,7 @@ public class MnistFileReader {
      * print the image data from a mnist image to the console
      * @param data the array containing the image data
      */
-    public void printImgToConsole(float[] data){
+    public static void printImgToConsole(float[] data){
         System.out.println("\n");
         for (int row = 0; row < this.imgRowDim; row++) {
             for (int col = 0; col < this.imgColDim; col++) {
@@ -141,7 +141,7 @@ public class MnistFileReader {
      * @param label the int representation of the label [0-9]
      * @return the array containing the binary representation
      */
-    private float[] labelToBinary(int label){
+    public static float[] labelToBinary(int label){
 
         float[] temp = new float[10];
         for(int i = 0; i < temp.length; i++) {
@@ -156,7 +156,7 @@ public class MnistFileReader {
      * @param binaryLabel the array containing the binary representation
      * @return the integer representation of the label
      */
-    public int binaryToLabel(float[] binaryLabel){
+    public static int binaryToLabel(float[] binaryLabel){
         for (int i = 0; i < binaryLabel.length; i++) {
             if(binaryLabel[i] == 1){
                 return i;
