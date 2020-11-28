@@ -2,7 +2,7 @@
 
 This repository contains a no dependency java implementation of an artifical neural net (ANN). The forward-pass and backpropagation are implemented using 2d and 3d arrays instead of the popular alternative of a matrix implementation.
 This choice was made to give the user an alternative in trying to understand backpropagation without the essentials being hidden behind a matrix implementation. 
-Note that this implementation is not meant to compete with the performance of state of the art neural network frameworks but rather serves as a showcase of a ANN for people that try to understand how neural networks fundamentaly work.
+Note that this implementation is not meant to compete with the performance of state of the art neural network frameworks but rather serves as a showcase of a ANN for people that try to understand how a simple neural networks fundamentaly work.
 
 The implementation contains methods for persisting and loading the trained weights to disk. The training is done by supplying two 2d arrays of data containing matching input and solution data for the network to train with. The ANN constructor allows for variable amounts and sizes of layers.
 
