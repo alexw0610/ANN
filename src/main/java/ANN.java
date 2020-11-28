@@ -3,14 +3,14 @@ import java.nio.ByteBuffer;
 
 public class ANN {
 
-    private float[] input;
-    private final float[][] hidden;
-    private float[] output;
+    public float[] input;
+    public final float[][] hidden;
+    public float[] output;
 
-    private float[][][] weights;
-    private final float[][] bias;
+    public float[][][] weights;
+    public final float[][] bias;
 
-    private float learningRate = 0.02f;
+    public float learningRate = 0.02f;
 
 
     public ANN(int input, int hidden, int layer, int output){

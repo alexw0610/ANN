@@ -10,7 +10,7 @@ public class Display implements GLEventListener {
 
     private static final float NODEOFFSET = 65.0f;
     private static final float LAYEROFFSET = 225.0f;
-    private static final float SCALE = 25.0f;
+    private static final float SCALE = 50.0f;
 
 
     private int width;
@@ -54,10 +54,13 @@ public class Display implements GLEventListener {
 
     public void displayNet(ANN net){
 
+        float inCenterOffset = ((float)net.hidden[0].length/2)-((float)net.input.length/2);
+        float outCenterOffset = ((float)net.hidden[0].length/2)-((float)net.output.length/2);
+
         synchronized (this.nodes){
             this.nodes.clear();
             for (int node = 0; node < net.input.length; node++) {
-                this.nodes.add(new DisplayNode(new Vector2f(0,node*NODEOFFSET),net.input[node]));
+                this.nodes.add(new DisplayNode(new Vector2f(0,(node+inCenterOffset)*NODEOFFSET),net.input[node]));
             }
             for (int hiddenLayer = 0; hiddenLayer < net.hidden.length; hiddenLayer++) {
                 for (int node = 0; node < net.hidden[hiddenLayer].length; node++) {
@@ -65,7 +68,7 @@ public class Display implements GLEventListener {
                 }
             }
             for (int node = 0; node < net.output.length; node++) {
-                this.nodes.add(new DisplayNode(new Vector2f((net.hidden.length+1)*LAYEROFFSET,node*NODEOFFSET),net.output[node]));
+                this.nodes.add(new DisplayNode(new Vector2f((net.hidden.length+1)*LAYEROFFSET,(node+outCenterOffset)*NODEOFFSET),net.output[node]));
             }
 
         }
@@ -76,8 +79,8 @@ public class Display implements GLEventListener {
                 for(int weightFrom = 0; weightFrom < net.weights[weightLayer].length; weightFrom++){
                     for(int weightTo = 0; weightTo < net.weights[weightLayer][weightFrom].length; weightTo++){
                         this.weights.add(new DisplayWeight(
-                                new Vector2f(weightLayer*LAYEROFFSET,weightFrom*NODEOFFSET),
-                                new Vector2f((weightLayer+1)*LAYEROFFSET,weightTo*NODEOFFSET),
+                                new Vector2f(weightLayer*LAYEROFFSET,(weightLayer == 0 ? (weightFrom+inCenterOffset) : weightFrom)*NODEOFFSET),
+                                new Vector2f((weightLayer+1)*LAYEROFFSET,(weightLayer == net.weights.length-1 ? (weightTo+outCenterOffset) : weightTo)*NODEOFFSET),
                                 net.weights[weightLayer][weightFrom][weightTo])
                         );
                     }
@@ -92,7 +95,9 @@ public class Display implements GLEventListener {
     @Override
     public void init(GLAutoDrawable glAutoDrawable) {
         GL2 gl = glAutoDrawable.getGL().getGL2();
-        gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        gl.glClearColor(0.05f, 0.05f, 0.05f, 1);
+        gl.glEnable(gl.GL_BLEND);
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     @Override
@@ -125,7 +130,7 @@ public class Display implements GLEventListener {
                 Transform.toClipSpace(vertexPointEnd, this.width, this.height);
 
                 gl.glBegin(GL2.GL_LINES);
-                    gl.glColor3f(weight.color.x, weight.color.y, weight.color.z);
+                    gl.glColor4f(weight.color.x, weight.color.y, weight.color.z,weight.color.w);
                     gl.glVertex3f(vertexPointStart[0],vertexPointStart[1],0);
                     gl.glVertex3f(vertexPointEnd[0],vertexPointEnd[1],0);
                 gl.glEnd();
@@ -138,7 +143,7 @@ public class Display implements GLEventListener {
 
                 float[] vertexPoints = node.getVertexPoints();
 
-                Transform.scale(vertexPoints, (node.value + 1) * SCALE);
+                Transform.scale(vertexPoints, SCALE);
                 Transform.translate(vertexPoints, node.position);
                 Transform.translate(vertexPoints, new Vector2f(this.width, this.height));
                 Transform.translate(vertexPoints, new Vector2f(-2.0f*LAYEROFFSET, -4*NODEOFFSET));
@@ -147,7 +152,7 @@ public class Display implements GLEventListener {
                 Transform.toClipSpace(vertexPoints, this.width, this.height);
 
                 gl.glBegin(GL2.GL_POLYGON);
-                    gl.glColor3f(node.color.x, node.color.y, node.color.z);
+                    gl.glColor4f(node.color.x, node.color.y, node.color.z,node.color.w);
                     for (int i = 0; i < vertexPoints.length / 3; i++) {
                         gl.glVertex3f(vertexPoints[i * 3], vertexPoints[i * 3 + 1], vertexPoints[i * 3 + 2]);
                     }

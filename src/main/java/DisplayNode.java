@@ -1,11 +1,12 @@
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 
 public class DisplayNode {
 
     float value;
-    Vector3f color = new Vector3f(255.0f,255.0f,255.0f);
+    Vector4f color = new Vector4f(1.0f,1.0f,1.0f,1.0f);
     Vector2f position;
 
     float[] vertexPoints = new float[]{
@@ -28,10 +29,12 @@ public class DisplayNode {
 
     private void setColor(){
 
-        if(this.value < 0.5f){
-            this.color = new Vector3f(255.0f,0.0f,0.0f);
-        }else{
-            this.color = new Vector3f(0.0f,255.0f,0.0f);
+        float colorRange = this.value *2 -1;
+
+        if (this.value < 0.5f) {
+            this.color = new Vector4f(-colorRange, 0.0f, 0.0f,1);
+        } else {
+            this.color = new Vector4f(0.0f, colorRange, 0.0f,1);
         }
     }
 

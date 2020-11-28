@@ -22,13 +22,14 @@ public class Visual{
         Display display = new Display(1024,768);
         display.canvas.reshape(0,0,1024,768);
         display.frame.repaint();
-        display.displayNet(ann);
+        display.displayNet(ann);            //Displays the current state of the net
 
         for(int cycle = 0; cycle <100000;cycle++){
             ann.train(trainData,trainSolutions,1,0.01f,1);
-            display.displayNet(ann);
+            //if(cycle%5000==0)             //Uncomment and edit to only update after multiple iteration
+                display.displayNet(ann);    //Displays the current state of the net
             try {
-                Thread.sleep(50);
+                Thread.sleep(100);      //Adjust this for better visual representation of states
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
