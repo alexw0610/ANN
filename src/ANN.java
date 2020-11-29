@@ -12,7 +12,13 @@ public class ANN {
 
     public float learningRate = 0.02f;
 
-
+    /**
+     * The constructor method for a new neural network.
+     * @param input the dimension of the desired input layer.
+     * @param hidden the dimension of a single hidden layer.
+     * @param layer the total amount of layer of the network (including input and output).
+     * @return the instance of the specified network.
+     */
     public ANN(int input, int hidden, int layer, int output){
 
         /*  |      <----       layer       ---->     |
@@ -113,7 +119,7 @@ public class ANN {
      * @param testCases a 2d array containing arrays with input values
      * @param testSolutions a 2d array containing arrays with solutions mapping to the input values
      * @param iterations the desired iterations for which the training should be performed
-     * @param margin the margin value that the mean squared error of the network needs to beat NOTE: not used yet
+     * @param margin the margin value that the mean squared error of the network needs to achieve NOTE: not used yet
      * @param verbosityLevel the desired level of information printed to the console
      */
     public void train(float[][] testCases, float[][] testSolutions, int iterations, float margin, int verbosityLevel){
