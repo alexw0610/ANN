@@ -119,7 +119,7 @@ public class MnistFileReader {
      * print the image data from a mnist image to the console
      * @param data the array containing the image data
      */
-    public static void printImgToConsole(float[] data){
+    public void printImgToConsole(float[] data){
         System.out.println("\n");
         for (int row = 0; row < this.imgRowDim; row++) {
             for (int col = 0; col < this.imgColDim; col++) {
